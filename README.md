@@ -4,7 +4,7 @@ An Open-Source Platform for Fully Quantitative Ultrasound Flow and Tissue Motion
 ## 1.Flow Simulator
 This project provides a comprehensive flow simulation pipeline for modeling, reconstructing, and visualizing three-dimensional vascular structures and associated hemodynamic fields. It leverages cutting-edge computational and visualization tools to generate physiologically realistic vascular networks, simulate blood flow, analyze particle dynamics, and produce publication-quality visualizations. The pipeline features the following core components:
 
-### 1.1 Deep Learning-based 3D Vascular Structure Generator
+## 1.1 Deep Learning-based 3D Vascular Structure Generator
 At the heart of the simulator lies a stochastic parametric L-system-based generator for synthetic vascular structures. This module simulates fractal vascular growth through iterative probabilistic rewriting rules, constrained by biomechanical and anatomical parameters:
 
 Fractal Growth: Models vascular bifurcation, segment length, and diameter variation according to biological rules (e.g., Murray's law, realistic bifurcation angles).
@@ -14,7 +14,7 @@ Realistic Imaging: Generates simulated CT/MRI intensity profiles mimicking angio
 
 Flow/Structuer Generator/generate_vessel_network.py
 
-###1.2. SimVascular Integration
+##1.2. SimVascular Integration
 The generated vascular skeletons are readily imported into SimVascular , a widely used open-source platform for vascular modeling and simulation:
 
 Centerline and Cross-section Extraction: Import synthetic structures to reconstruct full 3D vascular models.
@@ -22,7 +22,7 @@ Mesh Generation: Use TetGen to build unstructured tetrahedral meshes supporting 
 CFD Simulation: Employ svSolver (Finite Element Method) to solve the unsteady Navier–Stokes equations for blood flow.
 https://simvascular.github.io/
 
-###1.3. ParaView Visualization
+##1.3. ParaView Visualization
 Results from SimVascular are visualized and post-processed in ParaView, a powerful open-source scientific visualization platform:
 
 Data Processing: Handle structured/unstructured meshes and volumetric data with modular filters.
@@ -31,7 +31,7 @@ Parallelism: Large datasets can be processed efficiently thanks to ParaView's di
 https://www.paraview.org/
 
 
-###1.4. PROTEUS Particle Trajectory Analysis
+##1.4. PROTEUS Particle Trajectory Analysis
 PROTEUS extends the flow simulator with a streamline-based model of microbubble or particle transport:
 
 Streamline Integration: Computed from pre-solved CFD velocity fields using adaptive step-size control to ensure numerical accuracy.
@@ -40,7 +40,7 @@ Physically Realistic: Simulates complex 3D transport dynamics of scatterers unde
 https://github.com/PROTEUS-SIM/PROTEUS
 
 
-### Example Workflow
+## Example Workflow
 Generate: Use the 3D Vascular Structure Generator to create a synthetic vascular network.
 Simulate: Import the network into SimVascular, generate a mesh, and run CFD simulations.
 Visualize: Open simulation results in ParaView for field analysis and visualization.
