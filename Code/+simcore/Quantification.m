@@ -36,7 +36,7 @@ classdef Quantification
             vtufilepath = fullfile(geometyData_path,'vtu.mat');
             GeometryPropertiesPath = fullfile(geometyData_path,'GeometryProperties.mat');
             load(GeometryPropertiesPath,'vtuProperties');
-            [vtuStruct2, ~] = load_vessel_data(vtufilepath,vtuProperties);
+            [vtuStruct2, ~] = alg.load_vessel_data(vtufilepath,vtuProperties);
 
             % Transform to imaging coordinates
             positions  = T.transform(vtuStruct2.points);
@@ -65,9 +65,9 @@ classdef Quantification
             vol1 = vel_Volume/max(vel_Volume,[],'all');
 
             % ------ Load reconstructed Doppler image ------
-            matName = fullfile(obj.floderPath,'uPDI.mat');
-            load(matName,'Img0');
-            Img2 = max(Img0, -45);
+            matName = fullfile(obj.floderPath,'processedImage.mat');
+            load(matName,'I_uPDI_80db');
+            Img2 = max(I_uPDI_80db, -45);
             Img1 = (Img2+45)/45;
             vol2 = Img1;
 
