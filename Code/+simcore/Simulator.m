@@ -17,7 +17,7 @@ classdef Simulator
         function obj = Simulator(flowScatters,scene,globalParam,usParam)
             obj.MotionMode       = globalParam.MotionMode;
             obj.SimThreeDMode    = globalParam.SimThreeDMode;
-            obj.ReconThreeDMode  = globalParam.ReconThreeDMode; 
+            obj.ReconThreeDMode  = globalParam.ReconThreeDMode;
             obj.velocityFieldMode= globalParam.velocityFieldMode;
             obj.globalParam      = globalParam;
             obj.usParam          = usParam;
@@ -108,9 +108,16 @@ classdef Simulator
                         movedFlow =  obj.flowScatters{k}.pos + deltaD*(k-1);
                         scattersPos = [TissuePoints;movedFlow];
                         scattersRC  = [ones(length(TissuePoints),1);obj.flowScatters{k}.rc];
+                    case 10
+                        scattersPos = obj.flowScatters{k}.pos;
+                        scattersRC  = obj.flowScatters{k}.rc;
                     otherwise % No tissue motion
-                        scattersPos = [obj.scene.tissueScatters;obj.flowScatters{k}.pos];
-                        scattersRC  = [ones(length(obj.scene.tissueScatters),1);obj.flowScatters{k}.rc];
+                        % scattersPos = [obj.scene.tissueScatters;obj.flowScatters{k}.pos];
+                        % scattersRC  = [ones(length(obj.scene.tissueScatters),1);obj.flowScatters{k}.rc];
+                        scattersPos = obj.flowScatters{k}.pos;
+                        scattersRC  = obj.flowScatters{k}.rc;
+
+
                 end
 
                 % Position limits based on probe
@@ -120,57 +127,79 @@ classdef Simulator
                 switch obj.globalParam.probeCase
                     case 'L11-5v'
                         x_cond = (x >= -2.1e-2) & (x <= 2.1e-2);
-                        y_cond = (y >= -0.5e-2) & (y <= 0.5e-2);
-                        z_cond = (z >= 0)   & (z <= 5.1e-2);
+                        y_cond = (y >= -0.75e-2) & (y <= 0.75e-2);
+                        z_cond = (z >= 0)   & (z <= 6e-2);
                     case 'Vermon'
                         x_cond = (x >= -1.1e-2) & (x <= 1.1e-2);
                         y_cond = (y >= -1.1e-2) & (y <= 1.1e-2);
                         z_cond = (z >= 0)   & (z <= 2.8e-2);
+                    case 'Vermon-3'
+                        x_cond = (x >= -2.1e-2) & (x <= 2.1e-2);
+                        y_cond = (y >= -2.1e-2) & (y <= 2.1e-2);
+                        z_cond = (z >= 0)   & (z <= 8.1e-2);
                 end
                 idx = x_cond & y_cond & z_cond;
                 scattersPos = scattersPos(idx, :);
                 scattersRC  = scattersRC(idx, :);
 
+
+
+
                 % Define RF output path
                 RFoutputName = fullfile('..\Result',obj.globalParam.resultFloder,'RF',['RF_',num2str(k,'%03d'),'.mat']);
                 tstart = tic;
 
+
+
                 switch obj.MotionMode
-                    case {1,2}
+                    case {1,2,10}
                         if obj.globalParam.SimThreeDMode == 1
                             alg.FQSim3D(scattersPos,scattersRC,RFoutputName,struct(obj.usParam));
                         else
                             alg.FQSim2D(scattersPos,scattersRC,RFoutputName,struct(obj.usParam));
                         end
+
+
                     otherwise % Combine phantom and vessel simulation
                         if needSimPhantom == true
-                            PhantomRF =  alg.FQSim3D_noSave(obj.scene.tissueScatters,...
-                                         ones(length(obj.scene.tissueScatters),1),RFoutputName,struct(obj.usParam));
+                            if obj.globalParam.SimThreeDMode == 1
+                                PhantomRF =  alg.FQSim3D_noSave(obj.scene.tissueScatters,...
+                                    ones(length(obj.scene.tissueScatters),1),RFoutputName,struct(obj.usParam));
+                            else
+                                PhantomRF =  alg.FQSim2D_noSave(obj.scene.tissueScatters,...
+                                    ones(length(obj.scene.tissueScatters),1),RFoutputName,struct(obj.usParam));
+                            end
                             needSimPhantom = false;
                         end
-                        VesselRF =  alg.FQSim3D_noSave(obj.flowScatters{k}.pos,obj.flowScatters{k}.rc,RFoutputName,struct(obj.usParam));
+                        if obj.globalParam.SimThreeDMode == true
+                            VesselRF =  alg.FQSim3D_noSave(scattersPos,scattersRC,RFoutputName,struct(obj.usParam));
+                        else
+                            VesselRF =  alg.FQSim2D_noSave(scattersPos,scattersRC,RFoutputName,struct(obj.usParam));
+                        end
                         RF = cell(obj.usParam.Na, 1);
                         for kk = 1:length(VesselRF)
                             a = PhantomRF{kk};
                             b = VesselRF{kk};
                             padRows = abs(size(a,1) - size(b,1));
                             if size(a,1) > size(b,1)
-                                b_padded = [b; zeros(padRows, size(b, 2), 'like', b)];
+
+                                b_padded = [b; zeros(padRows, size(a, 2), 'like', b)];
+                                
                                 RF{kk} = a + b_padded;
                             else
-                                a_padded = [a; zeros(padRows, size(a, 2), 'like', a)];
+                                a_padded = [a; zeros(padRows, size(b, 2), 'like', a)];
                                 RF{kk} = b + a_padded;
                             end
                         end
-                                   % Save RF data
-                folderPath2 = fileparts(RFoutputName);
-                if ~isfolder(folderPath2)
-                    mkdir(folderPath2);
-                end
-                save(RFoutputName, 'RF');    
+                        % Save RF data
+                        folderPath2 = fileparts(RFoutputName);
+                        if ~isfolder(folderPath2)
+                            mkdir(folderPath2);
+                        end
+                        save(RFoutputName, 'RF');
                 end
 
- 
+
 
                 elapsedTime = toc(tstart);
                 disp(['Frame time: ', num2str(elapsedTime/60, '%.2f'), ' mins for simulation']);
