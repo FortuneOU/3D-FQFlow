@@ -5,7 +5,7 @@
 
 # 3D-FQFlow
 
-Welcome to 3D-FQFlow (3D-Fully Quantitative Flow)! This is an open-source framework for quantitatively simulating blood flow and tissue motion for ultrafast power Doppler imaging (uPDI) [1]. The tool is capable of simulating high-fidelity 3D vascular geometries, transient hemodynamics, and physiological tissue motion, while providing a highly optimized GPU-accelerated acoustic reconstruction module .
+Welcome to 3D-FQFlow (3D-Fully Quantitative Flow)! This is an open-source framework for quantitatively simulating blood flow and tissue motion for ultrafast power Doppler imaging (uPDI) . The tool is capable of simulating high-fidelity 3D vascular geometries, transient hemodynamics, and physiological tissue motion, while providing a highly optimized GPU-accelerated acoustic reconstruction module .
 
 ## 🧩 Module Overview
 
