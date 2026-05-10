@@ -36,13 +36,27 @@ To lower the barrier to entry for non-expert users, the framework provides an au
 ---
 
 ## 🔗 External Dependencies
+FQ-FLOW synergistically integrates several specialized solvers and libraries. To ensure full functionality, please install or configure the following dependencies based on the modules you intend to use:
 
-FQ-FLOW synergistically integrates world-class open-source solvers. Please ensure you have them installed or compiled according to your system requirements:
+### 1. Flow Simulation Module
+*   **[svVascularize](https://github.com/SimVascular/svVascularize):** For stochastic constructive optimization and vascular network generation.
+*   **[svFSI / svFSIplus](https://github.com/SimVascular/svFSI):** Core multiphysics finite element package for transient hemodynamic simulations.
+*   **Python (3.x):** Required for automation scripts and managing the custom particle tracking module.
+*   **[ParaView](https://www.paraview.org/):** Used for VTK data processing and extraction of flow field information.
 
-*   **[svVascularize](https://github.com/SimVascular/svVascularize):** Used in the Flow Simulation Module for stochastic constructive optimization and vascular network generation.
-*   **[svFSI / svFSIplus](https://github.com/SimVascular/svFSI):** A highly capable multiphysics finite element package used for transient hemodynamic simulations.
+### 2. Tissue Simulation Module
+*   **MATLAB:** Used for generating and managing perivascular tissue motion.
 
----
+### 3. Ultrasound Simulation Module
+*   **MATLAB:** Core environment for acoustic field calculations.
+*   **MATLAB Parallel Computing Toolbox:** **Required** for hardware acceleration to handle large-scale scatterer simulations efficiently.
+*   **PFIELD (via [SIMUS](https://www.creatis.insa-lyon.fr/site7/en/SIMUS)):** Integrated component for simulating acoustic fields and transducer responses.
+
+### 4. Image Processor
+*   **MATLAB:** For Doppler signal reconstruction, filtering, and quantitative image analysis.
+
+> [!NOTE]
+> While the core Flow Simulation components (svFSI/svVascularize) are open-source, the Ultrasound and Tissue modules require a **MATLAB license**. Please ensure you have the necessary subscriptions, including the *Parallel Computing Toolbox*, for full performance.
 
 ## 📄 License
 
